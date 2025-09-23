@@ -114,7 +114,7 @@ test_that("Chunks 'contingence', 'corr' & 'corrcomment' : description des donné
 
   expect_true(is_identical_to_ref("corrcomment"))
   # L'interprétation de la description des données est (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent le graphique et la table d'un
+  # Vous devez cocher les phrases qui décrivent le graphique et la table d'un
   # 'x' entre les crochets [] -> [x]. Ensuite, vous devez recompiler la version
   # HTML du bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les
   # résultats.
@@ -143,7 +143,7 @@ test_that("Chunks 'plot1', 'plot2', 'plot3' & 'plotcomment' : graphiques 2000 à
 
   expect_true(is_identical_to_ref("plotcomment"))
   # L'interprétation des graphiques 2000 à 2015 est (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent les graphiques d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent les graphiques d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -178,7 +178,7 @@ test_that("Chunks 'plot1b', 'plot2b', 'plot3b' & 'plotbcomment' : graphiques 200
 
   expect_true(is_identical_to_ref("plotbcomment"))
   # L'interprétation des graphiques 2000 et 2015 est (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent les graphiques d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent les graphiques d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -195,7 +195,7 @@ test_that("Chunks 'model2000_1', 'model2000_1comment', premier modèle linéaire
   expect_true(is_identical_to_ref("model2000_1comment"))
   # L'interprétation du premier modèle linéaire pour 2000 est (partiellement)
   # fausse
-  # Vous devez cochez les phrases qui décrivent le modèle d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le modèle d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -212,7 +212,7 @@ test_that("Chunks 'model2000_2', 'model2000_2comment', second modèle linéaire 
   expect_true(is_identical_to_ref("model2000_2comment"))
   # L'interprétation du second modèle linéaire pour 2000 est (partiellement)
   # fausse
-  # Vous devez cochez les phrases qui décrivent le modèle d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le modèle d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -228,7 +228,7 @@ test_that("Chunks 'compa1', 'compa1comment', comparaison des deux premiers modè
   expect_true(is_identical_to_ref("compa1comment"))
   # L'interprétation de la comparaison des deux premiers modèles pour 2000 est
   # (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent la comparaison d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent la comparaison d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -245,7 +245,7 @@ test_that("Chunks 'model2000_3', 'model2000_3comment', troisième modèle linéa
   expect_true(is_identical_to_ref("model2000_3comment"))
   # L'interprétation du troisième modèle linéaire pour 2000 est (partiellement)
   # fausse
-  # Vous devez cochez les phrases qui décrivent le modèle d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le modèle d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -261,7 +261,7 @@ test_that("Chunks 'compa2', 'compa2comment', comparaison des modèles é et 3 po
   expect_true(is_identical_to_ref("compa2comment"))
   # L'interprétation de la comparaison des modèles 2 et 3 pour 2000 est
   # (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent la comparaison d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent la comparaison d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -287,7 +287,7 @@ test_that("Chunks 'resid1' & 'resid1comment' : graphiques d'analyse des résidus
   expect_true(is_identical_to_ref("resid1comment"))
   # L'interprétation des graphiques d'analyse des résidus du modèle 2000 est
   # (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent les graphiques d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent les graphiques d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -304,7 +304,7 @@ test_that("Chunks 'model2015_1', 'model2015_1comment', premier modèle linéaire
   expect_true(is_identical_to_ref("model2015_1comment"))
   # L'interprétation du premier modèle linéaire pour 2015 est (partiellement)
   # fausse
-  # Vous devez cochez les phrases qui décrivent le modèle d'un 'x' entre les
+  # Vous devez cocher les phrases qui décrivent le modèle d'un 'x' entre les
   # crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -363,7 +363,7 @@ test_that("Chunks 'resid2' & 'resid2comment' : graphiques d'analyse des résidus
   expect_true(is_identical_to_ref("resid2comment"))
   # L'interprétation des graphiques d'analyse des résidus du modèle 2015 est
   # (partiellement) fausse
-  # Vous devez cochez les phrases qui décrivent les graphiques d'un 'x' entre
+  # Vous devez cocher les phrases qui décrivent les graphiques d'un 'x' entre
   # les crochets [] -> [x]. Ensuite, vous devez recompiler la version HTML du
   # bloc-notes (bouton 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -373,7 +373,7 @@ test_that("Chunks 'resid2' & 'resid2comment' : graphiques d'analyse des résidus
 test_that("Chunks 'discu1-5comment' : discussion et conclusion", {
   expect_true(is_identical_to_ref("discu1comment"))
   # L'élément de discussion #1 n'est pas sélectionné ou n'est pas celui attendu
-  # Vous devez cochez la phrase correcte d'un 'x' entre les crochets [] -> [x].
+  # Vous devez cocher la phrase correcte d'un 'x' entre les crochets [] -> [x].
   # Ensuite, vous devez recompiler la version HTML du bloc-notes (bouton
   # 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -381,7 +381,7 @@ test_that("Chunks 'discu1-5comment' : discussion et conclusion", {
 
   expect_true(is_identical_to_ref("discu2comment"))
   # L'élément de discussion #2 n'est pas sélectionné ou n'est pas celui attendu
-  # Vous devez cochez la phrase correcte d'un 'x' entre les crochets [] -> [x].
+  # Vous devez cocher la phrase correcte d'un 'x' entre les crochets [] -> [x].
   # Ensuite, vous devez recompiler la version HTML du bloc-notes (bouton
   # 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -389,7 +389,7 @@ test_that("Chunks 'discu1-5comment' : discussion et conclusion", {
 
   expect_true(is_identical_to_ref("discu3comment"))
   # L'élément de discussion #3 n'est pas sélectionné ou n'est pas celui attendu
-  # Vous devez cochez la phrase correcte d'un 'x' entre les crochets [] -> [x].
+  # Vous devez cocher la phrase correcte d'un 'x' entre les crochets [] -> [x].
   # Ensuite, vous devez recompiler la version HTML du bloc-notes (bouton
   # 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -397,7 +397,7 @@ test_that("Chunks 'discu1-5comment' : discussion et conclusion", {
 
   expect_true(is_identical_to_ref("discu4comment"))
   # L'élément de discussion #4 n'est pas sélectionné ou n'est pas celui attendu
-  # Vous devez cochez la phrase correcte d'un 'x' entre les crochets [] -> [x].
+  # Vous devez cocher la phrase correcte d'un 'x' entre les crochets [] -> [x].
   # Ensuite, vous devez recompiler la version HTML du bloc-notes (bouton
   # 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
@@ -405,7 +405,7 @@ test_that("Chunks 'discu1-5comment' : discussion et conclusion", {
 
   expect_true(is_identical_to_ref("discu5comment"))
   # L'élément de discussion #5 n'est pas sélectionné ou n'est pas celui attendu
-  # Vous devez cochez la phrase correcte d'un 'x' entre les crochets [] -> [x].
+  # Vous devez cocher la phrase correcte d'un 'x' entre les crochets [] -> [x].
   # Ensuite, vous devez recompiler la version HTML du bloc-notes (bouton
   # 'Rendu') sans erreur pour réactualiser les résultats.
   # Assurez-vous de bien comprendre ce qui est coché ou pas : vous n'aurez plus
