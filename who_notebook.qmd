@@ -195,7 +195,7 @@ Nous allons considérer un modèle linéaire à termes additifs sans interaction
 who00_lm1 <- lm(data = who,
   ___ ~ (___ + ___ + ___) * ___,
   subset = ___ == ___)
-summary(who00_lm1) |> tabularise(origdata = who)
+summary_(who00_lm1) |> tabularise(origdata = who)
 tabularise$glance(who00_lm1, origdata = who)
 ```
 
@@ -229,7 +229,7 @@ Nous tentons une première simplification du modèle.
 who00_lm2 <- lm(data = who,
   ___ ~ ___ + ___ + (___ * ___),
   subset = ___)
-summary(who00_lm2) |> tabularise(origdata = who)
+summary_(who00_lm2) |> tabularise(origdata = who)
 ```
 
 <!--% Interprétez ce second modèle 2000. -->
@@ -279,7 +279,7 @@ Une seconde simplification nous mène à ne plus considérer aucune interaction 
 who00_lm3 <- lm(data = who,
   ___,
   subset = ___)
-summary(who00_lm3) |> tabularise(origdata = who)
+summary_(who00_lm3) |> tabularise(origdata = who)
 ```
 
 <!--% Interprétez ce second modèle 2000.-->
@@ -327,7 +327,7 @@ Le modèle final pour l'année 2000 est paramétré comme suit :
 <!--% Complétez l'équation paramétrée du modèle. -->
 
 $$
-`r eq__(who00_lm2, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2, 2, 2), origdata = who)`
+`r eq__(___, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2, 2, 2), origdata = ___)`
 $$
 
 ### Analyse des résidus du modèle pour l'an 2000
@@ -384,7 +384,7 @@ Pour l'année 2015, nous commençons également par un modèle à termes additif
 who15_lm1 <- lm(data = who,
   ___,
   subset = ___)
-summary(who15_lm1) |> tabularise(origdata = who)
+summary_(who15_lm1) |> tabularise(origdata = who)
 ```
 
 <!--% Interprétez ce modèle 2015. -->
@@ -414,7 +414,7 @@ Nous tentons une simplification de notre modèle pour l'an 2015.
 who15_lm2 <- lm(data = who,
   ___,
   subset = ___)
-summary(who15_lm2) |> tabularise(origdata = who)
+summary_(who15_lm2) |> tabularise(origdata = who)
 ```
 
 <!--% Interprétez ce second modèle 2015. -->
