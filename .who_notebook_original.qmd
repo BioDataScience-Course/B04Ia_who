@@ -9,6 +9,8 @@ format:
     toc: true
 editor: visual
 lang: fr
+svbox: 2026
+vm: "Ubuntu 24.04.3 LTS"
 ---
 
 ```{r setup, include=FALSE}
@@ -29,13 +31,25 @@ L'espérance de vie est un indicateur de santé publique important pour les diff
 
 Le but de ce travail est d'élaborer un modèle pour prédire l'espérance de vie moyenne soit dans un pays dit développé, soit dans un pays en voie de développement, à partir de données relatives à la mortalité moyenne des adultes (donc, pas les données complètes de mortalité), de l'indice de masse corporelle comme proxy de l'hygiène de vie et du nombre d'années scolaires pour le niveau d'éducation. Nous ne prenons pas en compte ici les données relatives aux soins de santé qui sont plus difficiles à synthétiser en une seule variable. La dimension temporelle sera également abordée.
 
-<!--# Vous noterez qu'il est bizarre d'utiliser la mortalité moyenne adulte pour prédire l'espérance de vie, car les deux variables sont issues des mêmes données au départ, soit les recensements de mortalités dans le pays. Donc, si l'on a ce qu'il faut à disposition pour en calculer la moyenne, on peut aussi très bien calculer précisément l'espérance de vie... et le modèle est inutile. Cependant, le modèle fait plus que cela, il permet de voir comment chaque variable intervient dans la prédiction de l'espérance de vie. Les relations entre ces variables établies par le modèle nous donnent donc des pistes pour comprendre les mécanismes responsables de l'augmentation ou de la diminution de l'espérance de vie. C'est dans cette optique-là que notre modèle est élaboré. -->
+<!--# Vous noterez qu'il est bizarre d'utiliser la mortalité moyenne adulte pour prédire l'espérance de vie, car les deux variables sont issues des mêmes données au départ, soit les recensements de mortalité dans le pays. Donc, si l'on a ce qu'il faut à disposition pour en calculer la moyenne, on peut aussi très bien calculer précisément l'espérance de vie... et le modèle est inutile. Cependant, le modèle fait plus que cela, il permet de voir comment chaque variable intervient dans la prédiction de l'espérance de vie. Les relations entre ces variables établies par le modèle nous donnent donc des pistes pour comprendre les mécanismes responsables de l'augmentation ou de la diminution de l'espérance de vie. C'est dans cette optique-là que notre modèle est élaboré. -->
 
 # Matériel et méthodes
 
 Les données sont disponibles dans le domaine public (licence CC0) à partir de Kaggle ([**Life Expectancy (WHO) Fixed**](https://www.kaggle.com/datasets/lashagoch/life-expectancy-who-updated)). Elles sont compilées à partir de différentes sources. L'origine des informations est détaillée dans la page de ce site. Le jeu de données est légèrement remanié (traitement documenté dans le fichier `R/import_who.R`).
 
-L'analyse est réalisée avec le [logiciel R](https://www.r-project.org) (`r R.version.string`) et en particulier le package {modelit} version `r packageVersion("modelit")` dans la [SciViews Box 2025](https://www.sciviews.org/software/svbox/). [Saturn Cloud](https://saturncloud.io) (Linux Ubuntu 22.04) est utilisé pour exécuter le code et compiler la version finale de ce bloc-notes.
+L'analyse est réalisée dans la [SciViews Box `r rmarkdown::metadata$svbox`](https://www.sciviews.org/software/svbox/) dans [Saturn Cloud](https://saturncloud.io) (`r rmarkdown::metadata$vm`) avec le [logiciel R](https://www.r-project.org) (`r R.version.string`). Le package {modelit} version `r packageVersion("modelit")` est utilisé pour réaliser les graphiques.
+
+### Déclaration sur l'utilisation de l'IA
+
+<!--% Spécifiez si vous avez employé l'intelligence artificielle dans votre projet. -->
+
+```{r ai_comment, output='asis'}
+select_answer(r"-{
+[] -   Ce document a été rédigé en étant assisté par l'Intelligence Artificielle.
+[] -   Ce document a été rédigé sans recours à l'Intelligence Artificielle.}-")
+```
+
+<!--% Précisez ci-dessous l'utilisation que vous avez faite de l'IA. Citez le modèle utilisé. -->
 
 # Résultats
 
@@ -55,7 +69,7 @@ Les données sont disponibles pour `r length(unique(who$Country))` pays et `r le
 <!--% Réalisez une table de contingence de la variable Status uniquement pour une année (utilisez l'année 2000). -->
 
 ```{r contingence, record='RNP', arg='col_keys', warning=FALSE}
-sfilter(who, ___) %>.%
+filter_(who, ~ ___) %>.%
   table(Status = .$Status) %>.%
   tabularise(.) %>.%
   Stb$set_header_labels(., values = c("Niveau de développement",
@@ -71,11 +85,11 @@ corr <- correlation(___)
 plot(corr)
 ```
 
-<!-- Commentez la table de contingence et le graphique des corrélations. -->
+<!--% Commentez la table de contingence et le graphique des corrélations. -->
 
 ```{r corrcomment, output='asis'}
 select_answer(r"-{
-[]. -  Il y a à peu près autant de pays en voie de développement que de pays développés.
+[] -   Il y a à peu près autant de pays en voie de développement que de pays développés.
 [] -   Il y a plus de pays en voie de développement que de pays développés.
 [] -   Il y a plus de pays développés que de pays en voie de développement.
 
@@ -84,7 +98,7 @@ select_answer(r"-{
 [] -   Les corrélations entre l'espérance de vie et l'IMC ou le niveau d'éducation sont également fortes.
 [] -   Les corrélations entre l'espérance de vie et l'IMC ou le niveau d'éducation sont moyennes.
 
-[] -   Il y a des corrélations importantes entre les possibles variables prédictives mortailté, IMC et éducation. Cela peut poser des problèmes au niveau du modèle.
+[] -   Il y a des corrélations importantes entre les possibles variables prédictives mortalité, IMC et éducation. Cela peut poser des problèmes au niveau du modèle.
 [] -   La corrélation entre les possibles variables prédictives mortalité, IMC et niveau d'éducation est moyenne à faible, ce qui est une bonne chose pour notre modèle linéaire (intercorrélation limitée).
 [] -   Il n'y a pas d'intercorrélation entre les possibles variables prédictives mortalité, IMC et niveau d'éducation.
 
@@ -95,7 +109,7 @@ select_answer(r"-{
 
 Les possibles variables prédictives quantitatives montrent des différences en fonction du niveau de développement et des patterns apparaissent en fonction de l'année, comme le montrent les trois graphiques ci-dessous.
 
-<!-- Réalisez trois graphiques en nuage de points de l'espérance de vie en fonction (1) de la mortalité (2) de l'IMC, et (3) du niveau d'éducation en utilisant la couleur pour les années et les facettes pour le niveau de développement (en utilisant pour ce dernier la variable 'Status'). -->
+<!--% Réalisez trois graphiques en nuage de points de l'espérance de vie en fonction (1) de la mortalité (2) de l'IMC, et (3) du niveau d'éducation en utilisant la couleur pour les années et les facettes pour le niveau de développement (en utilisant pour ce dernier la variable 'Status'). -->
 
 ```{r plot1, record='RNCS'}
 chart(data = who, ___) +
@@ -121,8 +135,8 @@ select_answer(r"-{
 [] -   Des patterns s'observent en fonction du temps : l'espérance de vie a tendance à augmenter avec le temps de manière générale.
 [] -   Des patterns s'observent en fonction du temps : l'espérance de vie a tendance à diminuer avec le temps de manière générale.
 
-[] -   Pour les pays dont l'espérance de vie est la plus faible, l'évolution dans le temps montre d'abord une nette diminution jusqu'en 2005 pour croître seulement ensuite.
-[] -   Les nuages de points ont des étalements similaires en fonction des trois variables, mais l'association est négative pour la mortalité alors qu'elle est positive pour l'IMC et la scolarité par rapport à l'espérance de vie.
+[] -   Pour quelques pays à faible espérance de vie, l'évolution dans le temps montre d'abord une nette diminution jusqu'en 2005 pour croître seulement ensuite.
+[] -   Les nuages de points sont dispersés de la même manière en fonction des trois variables, mais l'association est négative pour la mortalité alors qu'elle est positive pour l'IMC et la scolarité par rapport à l'espérance de vie.
 [] -   Le nuage de points montre une association négative forte entre la mortalité adulte et l'espérance de vie pour tous les pays.
 [] -   Les nuages de points pour l'IMC et la scolarité indiquent une association positive et moyenne avec l'espérance de vie, aussi bien pour les pays non développés que pour les pays développés.
 [] -   Les nuages de points pour l'IMC et la scolarité indiquent une association positive et moyenne avec l'espérance de vie pour les pays non développés. L'association est inexistante ou très faible pour les pays développés.}-")
@@ -130,10 +144,10 @@ select_answer(r"-{
 
 Nous n'utiliserons pas la variable `Year` comme variable prédictive, car les observations ne sont pas indépendantes (ce sont les mêmes pays qui sont mesurés successivement dans le temps). Afin d'avoir un jeu contenant des données qui soient indépendantes les unes des autres (une des conditions d'application des tests autour du modèle linéaire), nous ne traiterons qu'une année à la fois. Nous réaliserons deux modèles différents : le premier pour l'an 2000 et le second pour 2015.
 
-<!--% Filtrez les données pour ne conserver que les années 2000 et 2015 dans `who2` -->
+<!--% Filtrez les données pour ne conserver que les années 2000 et 2015 dans `who2`. -->
 
 ```{r filter, record='RODFS', object='who2'}
-who2 <- sfilter(who, ___)
+who2 <- filter_(who, ~ ___)
 ```
 
 <!--% Ensuite effectuez à nouveau trois nuages de points de l'espérance de vie en fonction de (1) la mortalité, (2) l'IMC et (3) le niveau d'éducation à partir de `who2`, mais cette fois-ci, en utilisant la couleur pour `Status` et les facettes pour `Year`. Ajoutez également les droites de régression. -->
@@ -156,7 +170,7 @@ chart(data = who2, ___) +
   ___
 ```
 
-<!-- Interprétez ces trois derniers graphiques. -->
+<!--% Interprétez ces trois derniers graphiques. -->
 
 ```{r plotbcomment, output='asis'}
 select_answer(r"-{
@@ -187,7 +201,7 @@ select_answer(r"-{
 
 Nous allons considérer un modèle linéaire à termes additifs sans interactions, sauf entre le niveau de développement des pays et les autres variables prédictives.
 
-<!--# Vous allez ici mettre à profit une propriété intéressante des formules qui est que les mêmes propriétés de commutation des opérateurs existent pour définir les termes du modèle. Ainsi, en algèbre (A + B) * C est égale à A * C + B * C. Vous pouvez faire de même avec les termes de votre modèle dans la formule. -->
+<!--# Vous allez ici mettre à profit une propriété intéressante des formules qui est que les mêmes propriétés de distributivité des opérateurs existent pour définir les termes du modèle. Ainsi, en algèbre (A + B) * C est égale à A * C + B * C. Vous pouvez faire de même avec les termes de votre modèle dans la formule. -->
 
 <!--% Réalisez un modèle linéaire de l'espérance de vie en fonction de la mortalité, de l'IMC, du niveau d'éducation sans interactions entre eux, tous les trois croisés avec le niveau de développement des pays pour l'an 2000 représenté par la variable `Developed` (interactions seulement entre `Developed` et les trois variables quantitatives, aidez-vous de ce qui est déjà prérempli pour la formule et du commentaire juste au-dessus). Vous partirez de `who` et ferez un "subset" des données de l'an 2000 directement dans `lm()`. Placez le modèle dans `who00_lm1`. Résumez ensuite ce modèle en vous aidant de `tabularise()` pour en formater la sortie. Enfin, sortez un second tableau avec les métriques principales de performance de ce modèle, toujours en le formatant avec `tabularise()`. -->
 
@@ -213,17 +227,17 @@ select_answer(r"-{
 
 [] -   Tous les paramètres du modèle sont significativement différents de zéro au seuil $\alpha$ de 5%.
 [] -   Seuls les termes indépendants du modèle sont significativement différents de zéro au seuil $\alpha$ de 5% (pas le décalage de l'origine et pas les interactions).
-[] -   Seuls les termes indépendants du modèle et le décalage de l'origine sont significativement différents de zéro au seuil $\alpha$ de 5% (pas les interractions).
-[] -   Seuls les interactions du modèle sont significativement différentes de zéro au seuil $\alpha$ de 5% (pas le décalage de l'origine et pas les termes indépendants).
-[] -   Seuls les interactions du modèle et le décalage de l'origine sont significativement différents de zéro au seuil $\alpha$ de 5% (pas les termes indépendants).
+[] -   Seuls les termes indépendants du modèle et le décalage de l'origine sont significativement différents de zéro au seuil $\alpha$ de 5% (pas les interactions).
+[] -   Seules les interactions du modèle sont significativement différentes de zéro au seuil $\alpha$ de 5% (pas le décalage de l'origine et pas les termes indépendants).
+[] -   Seules les interactions du modèle et le décalage de l'origine sont significativement différents de zéro au seuil $\alpha$ de 5% (pas les termes indépendants).
 [] -   Le terme d'interaction entre scolarité et niveau de développement, bien que non significatif au seuil $\alpha$ de 5% a une valeur *p* proche du seuil.}-")
 ```
 
-<!--# Attention à ne pas prendre à la lettre les résultats des tests t de Students relatifs aux paramètres. Vous êtes libres de décider si vous voulez éliminer ou garder un terme dans votre modèle, même à l'encontre du résultat du test. Ces résultats ne sont que des indications pour vous guider. Le bon sens ou vos connaissances en qualité d'expert du domaine peuvent vous pousser à garder ou non un terme particulier par rapport à ce qu'il représente du phénomène étudié. Par exemple, les termes d'interactions indiquent un comportement différent d'une variable quantitative dans les pays développés par rapport aux non développés. Ainsi, la scolarité est-elle similaire entre ces deux catégories de pays ? Si non, est-ce que cela a un sens de considérer que son impact sur l'espérance de vie peut être également différent entre les deux catégories de pays ? -->
+<!--# Attention à ne pas prendre à la lettre les résultats des tests t de Student relatifs aux paramètres. Vous êtes libres de décider si vous voulez éliminer ou garder un terme dans votre modèle, même à l'encontre du résultat du test. Ces résultats ne sont que des indications pour vous guider. Le bon sens ou vos connaissances en qualité d'expert du domaine peuvent vous pousser à garder ou non un terme particulier par rapport à ce qu'il représente du phénomène étudié. Par exemple, les termes d'interactions indiquent un comportement différent d'une variable quantitative dans les pays développés par rapport aux non développés. Ainsi, la scolarité est-elle similaire entre ces deux catégories de pays ? Si non, est-ce que cela a un sens de considérer que son impact sur l'espérance de vie peut être également différent entre les deux catégories de pays ? -->
 
 Nous tentons une première simplification du modèle.
 
-<!--% Calculez un second modèle simplifié en fonction de vos observations du premier. Vous placez le résultat dans `who00_lm2` et en ferez le résumé uniquement. Vous simplifierez le modèle en éliminant les interactions entre mortalité et développement du pays et entre l'IMC et le développement du pays (pensez à la commutativité des opérateurs dans la formule et aidez-vous de ce qui est déjà prérempli). -->
+<!--% Calculez un second modèle simplifié en fonction de vos observations du premier. Vous placez le résultat dans `who00_lm2` et en ferez le résumé uniquement. Vous simplifierez le modèle en éliminant les interactions entre mortalité et développement du pays et entre l'IMC et le développement du pays (pensez à la distributivité des opérateurs dans la formule et aidez-vous de ce qui est déjà prérempli). -->
 
 ```{r model2000_2, record='ROP', object='who00_lm2', arg='call', warning=FALSE}
 who00_lm2 <- lm(data = who,
@@ -244,8 +258,8 @@ select_answer(r"-{
 
 [] -   Tous les paramètres du modèle sont significativement différents de zéro au seuil $\alpha$ de 5%.
 [] -   Plus aucun paramètre du modèle n'est significativement différent de zéro au seuil $\alpha$ de 5%.
-[] -   Les termes indépendants du modèle sont significativement différents de zéro au seuil $\alpha$ de 5% (mais pas le décalage de l'origine ou le terme d'interaction entre scolarité et espérance de vie).
-[] -   L'interaction entre scolarité et espérance de vie est devenue significativement différente de zéro au seuil $\alpha$ de 5% dans ce modèle simplifié. Cela démontre l'effet de l'intercorrélation des paramètres (lorsque le modèle change, certains paramètres peuvent prendre plus ou moins d'importance par rapport au modèle initial).}-")
+[] -   Les termes indépendants du modèle sont significativement différents de zéro au seuil $\alpha$ de 5% (mais pas le décalage de l'origine ou le terme d'interaction entre scolarité et niveau de développement).
+[] -   L'interaction entre scolarité et niveau de développement est devenue significativement différente de zéro au seuil $\alpha$ de 5% dans ce modèle simplifié. Cela démontre l'effet de l'intercorrélation des paramètres (lorsque le modèle change, certains paramètres peuvent prendre plus ou moins d'importance par rapport au modèle initial).}-")
 ```
 
 Voici la comparaison de nos deux modèles :
@@ -282,7 +296,7 @@ who00_lm3 <- lm(data = who,
 summary_(who00_lm3) |> tabularise(origdata = who)
 ```
 
-<!--% Interprétez ce second modèle 2000.-->
+<!--% Interprétez ce troisième modèle 2000. -->
 
 ```{r model2000_3comment, output='asis'}
 select_answer(r"-{
@@ -308,7 +322,7 @@ AIC(___, ___) |> as_dtt() |>
 anova(___, ___) |> tabularise(origdata = who)
 ```
 
-<!--% Indiquez, sur base de cette comparaison quel modèle vous allez conserver. -->
+<!--% Indiquez, sur base de cette comparaison, quel modèle vous allez conserver. -->
 
 ```{r compa2comment, output='asis'}
 select_answer(r"-{
@@ -318,23 +332,21 @@ select_answer(r"-{
 
 [] -   L'ANOVA de comparaison des deux modèles ne montre pas de différences significatives au seuil $\alpha$ de 5%. Nous pouvons donc conserver notre précédent modèle plus complexe.
 [] -   L'ANOVA de comparaison des deux modèles ne montre pas de différences significatives au seuil $\alpha$ de 5%. Nous pouvons donc conserver notre dernier modèle le plus simple.
-[] -   L'ANOVA de comparaison des deux modèles montre des différences significatives au seuil $\alpha$ de 5%. Nous allons donc conserver notre précédent modèle plus complexe.
-[] -   L'ANOVA de comparaison des deux modèles montre des différences significatives au seuil $\alpha$ de 5%. Nous conservons notre dernier modèle le plus simple.}-")
+[] -   L'ANOVA de comparaison des deux modèles montre des différences significatives au seuil $\alpha$ de 5%. Nous pouvons donc conserver notre précédent modèle plus complexe.
+[] -   L'ANOVA de comparaison des deux modèles montre des différences significatives au seuil $\alpha$ de 5%. Nous pouvons donc conserver notre dernier modèle le plus simple.}-")
 ```
 
 Le modèle final pour l'année 2000 est paramétré comme suit :
 
 <!--% Complétez l'équation paramétrée du modèle. -->
 
-$$
-`r eq__(___, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2, 2, 2), origdata = ___)`
-$$
+$$`r eq__(___, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2, 2, 2), origdata = ___)`$$
 
 ### Analyse des résidus du modèle pour l'an 2000
 
 Voici l'analyse des résidus de notre modèle pour l'an 2000.
 
-<!-- Effectuez l'analyse des résidus de votre meilleur modèle, à l'aide de la figure composite regroupant quatre graphiques. -->
+<!--% Effectuez l'analyse des résidus de votre meilleur modèle, à l'aide de la figure composite regroupant quatre graphiques. -->
 
 ```{r resid1, record='RNCS', arg='no.data'}
 ___
@@ -356,29 +368,29 @@ select_answer(r"-{
 [] -   Plusieurs valeurs extrêmes sont observées (A).
 
 [] -   Les résidus ont une distribution Normale ou à peu près Normale (B).
-[] -   Les résidus n'ont pas une distribution Normale mais elle est symétrique (B)
+[] -   Les résidus n'ont pas une distribution Normale mais elle est symétrique (B).
 [] -   Les résidus n'ont pas une distribution Normale et elle est asymétrique (B).
 [] -   Les résidus n'ont pas une distribution Normale car elle s'éloigne essentiellement pour les petites valeurs (encore une fois pour les pays où l'espérance de vie est la plus faible) (B).
 
 [] -   L'homoscédasticité des résidus est rencontrée (C).
 [] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente (C).
-[] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente, mais aussi au niveau des pays à espérance de vie élevée où elle diminue. (C).
+[] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente, mais aussi au niveau des pays à espérance de vie élevée où elle diminue (C).
 
 [] -   Nous ne notons pas la présence d'observations influentes (D).
 [] -   Nous notons la présence d'une observation influente tant au niveau de l'effet de levier que de la distance de Cook (D).
 [] -   Nous notons la présence d'observations influentes tant au niveau de l'effet de levier que de la distance de Cook (D).
 [] -   Nous notons la présence d'observations influentes par leur distance de Cook (D).
-[] -   Des observations ont un effet de levier important, mais avec distance de Cook faible.
-[] -   Une observation a un effet de levier important, mais avec distance de Cook faible.}-")
+[] -   Des observations ont un effet de levier important, mais avec distance de Cook faible (D).
+[] -   Une observation a un effet de levier important, mais avec distance de Cook faible (D).}-")
 ```
 
-Globalement, si l'analyse des résidus n'est pas parfaite, nous pouvons nous fier à notre modèle pour des espérances de vie pas trop extrêmes. Il serait intéressant de réajuster le modèle en ne prenant pas en compte les pays à l'espérance de vie la plus faible (commencer par exemple à 50 ans). Les plages de distribution des espérances de vie très différentes entre les pays non développés (40 à 80 ans) et développés (75 à 80 ans) posent problème ici, en particulier parce que l'espérance de vie en pays développés est peu étalée, ne facilitant pas l'établissement de relations entre cette dernière et de possibles variables prédictives.
+Globalement, si l'analyse des résidus n'est pas parfaite, nous pouvons nous fier à notre modèle pour des espérances de vie pas trop extrêmes. Il serait intéressant de réajuster le modèle en ne prenant pas en compte les pays à l'espérance de vie la plus faible (commencer par exemple à 50 ans). Les plages de distribution des espérances de vie très différentes entre les pays non développés (40 à 80 ans) et développés (70 à 81 ans) posent problème ici, en particulier parce que l'espérance de vie en pays développés est peu étalée, ne facilitant pas l'établissement de relations entre cette dernière et de possibles variables prédictives.
 
 ## Modèle de l'espérance de vie en l'an 2015
 
-Pour l'année 2015, nous commençons également par un modèle à termes additifs sans interactions entre les variables quantitatives, mais avec des interactions entre ces derniers et le niveau de développement des pays.
+Pour l'année 2015, nous commençons également par un modèle à termes additifs sans interactions entre les variables quantitatives, mais avec des interactions entre ces dernières et le niveau de développement des pays.
 
-<!--% Réalisez un même modèle linéaire de l'espérance pour l'an 2015 que `who00_lm1`. Placez-le dans `who15_lm1` et faites-en un résumé formaté avec `tabularise()`. -->
+<!--% Réalisez un même modèle linéaire de l'espérance de vie pour l'an 2015 que `who00_lm1`. Placez-le dans `who15_lm1` et faites-en un résumé formaté avec `tabularise()`. -->
 
 ```{r model2015_1, record='ROP', object='who15_lm1', arg='call', warning=FALSE}
 who15_lm1 <- lm(data = who,
@@ -461,15 +473,13 @@ Notre modèle final de prédiction de l'espérance de vie pour l'année 2015 est
 
 <!--% Complétez l'équation paramétrée du modèle. -->
 
-$$
-`r eq__(who15_lm2, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2), origdata = who)`
-$$
+$$`r eq__(who15_lm2, use_coefs = TRUE, coef_digits = c(1, 3, 2, 2), origdata = who)`$$
 
 ### Analyse des résidus du modèle pour l'an 2015
 
 Voici l'analyse des résidus pour le modèle de l'an 2015 que nous retenons.
 
-<!-- Effectuez l'analyse des résidus de votre meilleur modèle 2015, à l'aide de la figure composite regroupant quatre graphiques. -->
+<!--% Effectuez l'analyse des résidus de votre meilleur modèle 2015, à l'aide de la figure composite regroupant quatre graphiques. -->
 
 ```{r resid2, record='RNCS', arg='no.data'}
 ___
@@ -491,39 +501,39 @@ select_answer(r"-{
 [] -   Plusieurs valeurs extrêmes sont observées (A).
 
 [] -   Les résidus ont une distribution Normale ou à peu près Normale (B).
-[] -   Les résidus n'ont pas une distribution Normale mais elle est symétrique (B)
+[] -   Les résidus n'ont pas une distribution Normale mais elle est symétrique (B).
 [] -   Les résidus n'ont pas une distribution Normale et elle est asymétrique (B).
 [] -   Les résidus n'ont pas une distribution Normale car elle s'éloigne essentiellement pour les petites valeurs (encore une fois pour les pays où l'espérance de vie est la plus faible) (B).
 
 [] -   L'homoscédasticité des résidus est rencontrée (C).
 [] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente (C).
-[] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente, mais aussi au niveau des pays à espérance de vie élevée où elle diminue. (C).
+[] -   Il n'y a pas homoscédasticité des résidus à cause des pays à l'espérance de vie la plus faible où la variance augmente, mais aussi au niveau des pays à espérance de vie élevée où elle diminue (C).
 
 [] -   Nous ne notons pas la présence d'observations influentes (D).
 [] -   Nous notons la présence d'une observation influente tant au niveau de l'effet de levier que de la distance de Cook (D).
 [] -   Nous notons la présence d'observations influentes tant au niveau de l'effet de levier que de la distance de Cook (D).
 [] -   Nous notons la présence d'observations influentes par leur distance de Cook (D).
-[] -   Des observations ont un effet de levier important, mais avec distance de Cook faible.
-[] -   Une observation a un effet de levier important, mais avec distance de Cook faible.}-")
+[] -   Des observations ont un effet de levier important, mais avec distance de Cook faible (D).
+[] -   Une observation a un effet de levier important, mais avec distance de Cook faible (D).}-")
 ```
 
 Ici aussi l'analyse des résidus n'est pas parfaite, mais notre modèle est acceptable pour les pays ayant une espérance de vie supérieure à 55 ans (il faudrait refaire le modèle avec ce filtrage des données pour bien faire).
 
 # Discussion et conclusion
 
-Bien que nous tentons ici de prédire l'espérance de vie, et ce, en faisant la distinction entre pays développés et non développés, nous cherchons surtout à faire ressortir une relation entre plusieurs variables potentiellement prédictives de cet indicateur.
+Bien que nous tentions ici de prédire l'espérance de vie, et ce, en faisant la distinction entre pays développés et non développés, nous cherchons surtout à faire ressortir une relation entre plusieurs variables potentiellement prédictives de cet indicateur.
 
 ```{r discu1comment, output='asis'}
 select_answer(r"-{
 [] -   La mortalité moyenne est la variable la plus fortement corrélée à l'espérance de vie. C'est une observation surprenante.
-[] -   La mortalité moyenne est, logiquement, la variable la plus fortement corrélée à l'espérance de vie (elles sont toutes deux calculées à partie des tables de mortalités par pays). C'est dès lors ici la principale variable explicative de l'espérance de vie dans nos modèles.
+[] -   La mortalité moyenne est, logiquement, la variable la plus fortement corrélée à l'espérance de vie (elles sont toutes deux calculées à partir des tables de mortalité par pays). C'est dès lors ici la principale variable explicative de l'espérance de vie dans nos modèles.
 [] -   La mortalité moyenne est corrélée à l'espérance de vie, mais ce n'est pas le principal prédicteur. Il y en a d'autres tout aussi significatifs.}-")
 ```
 
 ```{r discu2comment, output='asis'}
 select_answer(r"-{
-[] -   Un décalage (léger mais significatif au seuil $\alpha$ de 5%) de l'espérance de vie existe entre les pays non développés et les pays développés, en faveur des premiers. Il faudrait sans doute tenir compte du système de soin de santé, ou de l'alimentation pour expliquer ce décalage.
-[] -   Un décalage (léger mais significatif au seuil $\alpha$ de 5%) de l'espérance de vie existe entre les pays non développés et les pays développés, en faveur de ces derniers. Il faudrait sans doute tenir compte du système de soin de santé, ou de l'alimentation pour expliquer ce décalage.
+[] -   Un décalage (léger mais significatif au seuil $\alpha$ de 5%) de l'espérance de vie existe entre les pays non développés et les pays développés, en faveur des premiers. Il faudrait sans doute tenir compte du système de soins de santé, ou de l'alimentation pour expliquer ce décalage.
+[] -   Un décalage (léger mais significatif au seuil $\alpha$ de 5%) de l'espérance de vie existe entre les pays non développés et les pays développés, en faveur de ces derniers. Il faudrait sans doute tenir compte du système de soins de santé, ou de l'alimentation pour expliquer ce décalage.
 [] -   Un décalage (léger) de l'espérance de vie est visible sur les graphiques entre les pays non développés et les pays développés, mais il apparaît non significatif au seuil $\alpha$ de 5% dans les modèles.
 [] -   Un décalage (léger) de l'espérance de vie est visible sur les graphiques entre les pays non développés et les pays développés, mais il apparaît non significatif au seuil $\alpha$ de 5% dans le modèle de l'an 2000 uniquement.
 [] -   Un décalage (léger) de l'espérance de vie est visible sur les graphiques entre les pays non développés et les pays développés, mais il apparaît non significatif au seuil $\alpha$ de 5% dans le modèle de l'an 2015 uniquement.}-")
@@ -541,7 +551,7 @@ select_answer(r"-{
 select_answer(r"-{
 [] -   L'IMC n'a pas un effet déterminant dans notre modèle, en particulier pour les pays développés.
 [] -   L'IMC a un effet significatif. C'est un proxy que nous avons utilisé pour l'hygiène de vie et l'alimentation.
-[] -   L'IMC a un effet significatif en l'an 2000, mais plus en l'an 2015. Nous pouvons faire l'hypothèse que les progrès en matière de soin relatifs aux conséquences de l'obésité (maladies cardiovasculaires, diabète...) ont permis de réduire l'impact de l'IMC sur l'espérance de vie, et ce, de manière globale. Encore une fois, il faudrait étudier l'impact de l'alimentation et des soins de santé sur l'espérance de vie pour avoir une vue plus complète.
+[] -   L'IMC a un effet significatif en l'an 2000, mais plus en l'an 2015. Nous pouvons faire l'hypothèse que les progrès en matière de soins relatifs aux conséquences de l'obésité (maladies cardiovasculaires, diabète...) ont permis de réduire l'impact de l'IMC sur l'espérance de vie, et ce, de manière globale. Encore une fois, il faudrait étudier l'impact de l'alimentation et des soins de santé sur l'espérance de vie pour avoir une vue plus complète.
 }-")
 ```
 
@@ -553,10 +563,10 @@ select_answer(r"-{
 }-")
 ```
 
-En conclusion, nos modèles montrent leur utilité dans la compréhension de composantes qui sont en relation avec l'espérance de vie, et comment ces composantes varient entre pays développés ou non ou au cours du temps. Pour les perspectives, il serait utile d'intégrer d'autres composantes, comme l'alimentation, le système de soin de santé, la pollution, etc. pour mieux comprendre les déterminants de l'espérance de vie.
+En conclusion, nos modèles montrent leur utilité dans la compréhension de composantes qui sont en relation avec l'espérance de vie, et comment ces composantes varient entre pays développés ou non ou au cours du temps. Pour les perspectives, il serait utile d'intégrer d'autres composantes, comme l'alimentation, le système de soins de santé, la pollution, etc. pour mieux comprendre les déterminants de l'espérance de vie.
 
 <!--# La tentation est forte de parler ici de cause à effet (éducation -> espérance de vie, IMC -> espérance de vie). Mais n'oubliez jamais que la régression ou le modèle linéaire n'établissent que des relations. La causalité ne peut pas être déduite de tels modèles ! -->
 
-<!--# Notez à l'issue de ce travail, comme les modèles linéaires sont des outils puissants pour nous aider à comprendre les relations complexes qui existent entre différentes variables et comment cela nous suggère des pistes à explorer ensuite pour en décrypter les mécanismes responsables de ces relations. Malheureusement, beaucoup de biologistes formulent trop souvent leurs questions scientifiques sous la forme binaire des tests d'hypothèses, alors que la modélisation leur offrirait bien plus d'informations utiles. Les tests d'hypothèses et l'interprétation sur base de la valeur p du test sont presque toujours mal compris, mal et sur-employés. D'autres techniques (en place principale, la modélisation) méritent de leurs être substituées. Lorsque vous faites de la modélisation, les tests et valeurs p autour des modèles ne doivent être utilisés que comme indicateurs. Votre œil d'expert et un bon esprit critique, combinés à un bon modèle accompagné d'une analyse graphique judicieuse des résidus sont bien plus précieux que des tests d'hypothèses appliqués de manière mécanique... mais cela nécessite aussi l'expertise d'un bon analyste des données. -->
+<!--# Notez à l'issue de ce travail, comme les modèles linéaires sont des outils puissants pour nous aider à comprendre les relations complexes qui existent entre différentes variables et comment cela nous suggère des pistes à explorer ensuite pour en décrypter les mécanismes responsables de ces relations. Malheureusement, beaucoup de biologistes formulent trop souvent leurs questions scientifiques sous la forme binaire des tests d'hypothèses, alors que la modélisation leur offrirait bien plus d'informations utiles. Les tests d'hypothèses et l'interprétation sur base de la valeur p du test sont presque toujours mal compris, mal employés et surutilisés. D'autres techniques (en premier lieu, la modélisation) méritent de leur être substituées. Lorsque vous faites de la modélisation, les tests et valeurs p autour des modèles ne doivent être utilisés que comme indicateurs. Votre œil d'expert et un bon esprit critique, combinés à un bon modèle accompagné d'une analyse graphique judicieuse des résidus sont bien plus précieux que des tests d'hypothèses appliqués de manière mécanique... mais cela nécessite aussi l'expertise d'un bon analyste des données. -->
 
 <!--# Pour ceux qui voudraient aller plus loin : comment se comporteraient les modèles si le niveau de référence était les pays développés (inverser l'ordre des niveaux de la variable facteur 'Status') ? Pourquoi est-ce différent ? Que donneraient des contrastes sommes ici ? Pourquoi est-ce différent ? -->

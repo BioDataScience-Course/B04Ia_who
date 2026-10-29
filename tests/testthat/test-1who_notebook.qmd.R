@@ -1,6 +1,7 @@
 # Vérifications de who_notebook.qmd
-who <- parse_rmd("../../who_notebook.qmd",
-  allow_incomplete = TRUE, parse_yaml = TRUE)
+who <- try(parsermd::parse_qmd("../../who_notebook.qmd"))
+expect_true(TRUE, info = who)
+
 
 test_that("Le bloc-notes est-il compilé en un fichier final HTML ?", {
   expect_true(is_rendered("who_notebook.qmd"))
@@ -21,14 +22,21 @@ test_that("Le bloc-notes est-il compilé en un fichier final HTML ?", {
 })
 
 test_that("La structure du document est-elle conservée ?", {
-  expect_true(all(c("Introduction et but", "Matériel et méthodes",
-    "Résultats", "Description des données",
-    "Modèle de l'espérance de vie en l'an 2000",
-    "Analyse des résidus du modèle pour l'an 2000",
-    "Modèle de l'espérance de vie en l'an 2015",
-    "Analyse des résidus du modèle pour l'an 2015",
-    "Discussion et conclusion")
-    %in% (rmd_node_sections(who) |> unlist() |> unique())))
+  expect_true(all(
+    c(
+      "Introduction et but",
+      "Matériel et méthodes",
+      "Déclaration sur l'utilisation de l'IA",
+      "Résultats",
+      "Description des données",
+      "Modèle de l'espérance de vie en l'an 2000",
+      "Analyse des résidus du modèle pour l'an 2000",
+      "Modèle de l'espérance de vie en l'an 2015",
+      "Analyse des résidus du modèle pour l'an 2015",
+      "Discussion et conclusion"
+    ) %in%
+      (rmd_node_sections(who) |> unlist() |> unique())
+  ))
   # Les sections (titres) attendues du bloc-notes ne sont pas toutes présentes
   # Ce test échoue si vous avez modifié la structure du document, un ou
   # plusieurs titres indispensables par rapport aux exercices ont disparu ou ont
@@ -36,16 +44,51 @@ test_that("La structure du document est-elle conservée ?", {
   # d'origine dans le dépôt "template" du document (lien au début du fichier
   # README.md).
 
-  expect_true(all(c("setup", "import", "contingence", "corr", "corrcomment",
-    "plot1", "plot2", "plot3", "plotcomment", "filter", "plot1b", "plot2b",
-    "plot3b", "plotbcomment", "model2000_1", "model2000_1comment",
-    "model2000_2", "model2000_2comment", "compa1", "compa1comment",
-    "model2000_3", "model2000_3comment", "compa2", "compa2comment", "resid1",
-    "resid1comment", "model2015_1", "model2015_1comment", "model2015_2",
-    "model2015_2comment", "compa3", "compa3comment", "resid2", "resid2comment",
-    "discu1comment", "discu2comment", "discu3comment", "discu4comment",
-    "discu5comment")
-    %in% rmd_node_label(who)))
+  expect_true(all(
+    c(
+      "setup",
+      "ai_comment",
+      "import",
+      "contingence",
+      "corr",
+      "corrcomment",
+      "plot1",
+      "plot2",
+      "plot3",
+      "plotcomment",
+      "filter",
+      "plot1b",
+      "plot2b",
+      "plot3b",
+      "plotbcomment",
+      "model2000_1",
+      "model2000_1comment",
+      "model2000_2",
+      "model2000_2comment",
+      "compa1",
+      "compa1comment",
+      "model2000_3",
+      "model2000_3comment",
+      "compa2",
+      "compa2comment",
+      "resid1",
+      "resid1comment",
+      "model2015_1",
+      "model2015_1comment",
+      "model2015_2",
+      "model2015_2comment",
+      "compa3",
+      "compa3comment",
+      "resid2",
+      "resid2comment",
+      "discu1comment",
+      "discu2comment",
+      "discu3comment",
+      "discu4comment",
+      "discu5comment"
+    ) %in%
+      rmd_node_label(who)
+  ))
   # Un ou plusieurs labels de chunks nécessaires à l'évaluation manquent
   # Ce test échoue si vous avez modifié la structure du document, un ou
   # plusieurs chunks indispensables par rapport aux exercices sont introuvables.
@@ -62,20 +105,21 @@ test_that("La structure du document est-elle conservée ?", {
 })
 
 test_that("L'entête YAML a-t-il été complété ?", {
-  expect_true(who[[1]]$author != "___")
-  expect_true(!grepl("__", who[[1]]$author))
-  expect_true(grepl("^[^_]....+", who[[1]]$author))
+  authors <- who[[1]]@yaml[["author"]]
+  expect_true(authors != "___")
+  expect_true(!grepl("__", authors))
+  expect_true(grepl("^[^_]....+", authors))
   # Le nom d'auteur n'est pas complété ou de manière incorrecte dans l'entête
   # Vous devez indiquer votre nom dans l'entête YAML à la place de "___" et
   # éliminer les caractères '_' par la même occasion.
 
-  expect_true(grepl("[a-z]", who[[1]]$author))
+  expect_true(grepl("[a-z]", authors))
   # Aucune lettre minuscule n'est trouvée dans le nom d'auteur
   # Avez-vous bien complété le champ 'author' dans l'entête YAML ?
   # Vous ne pouvez pas écrire votre nom tout en majuscules. Utilisez une
   # majuscule en début de nom et de prénom, et des minuscules ensuite.
 
-  expect_true(grepl("[A-Z]", who[[1]]$author))
+  expect_true(grepl("[A-Z]", authors))
   # Aucune lettre majuscule n'est trouvée dans le nom d'auteur
   # Avez-vous bien complété le champ 'author' dans l'entête YAML ?
   # Vous ne pouvez pas écrire votre nom tout en minuscules. Utilisez une
@@ -252,9 +296,9 @@ test_that("Chunks 'model2000_3', 'model2000_3comment', troisième modèle linéa
   # cette aide plus tard dans le travail de groupe ou les interrogations !
 })
 
-test_that("Chunks 'compa2', 'compa2comment', comparaison des modèles é et 3 pour 2000", {
+test_that("Chunks 'compa2', 'compa2comment', comparaison des modèles 2 et 3 pour 2000", {
   expect_true(is_identical_to_ref("compa2"))
-  # La comparaison des modèles 2 et 3 pour 2000 (chunk 'compa1') n'est
+  # La comparaison des modèles 2 et 3 pour 2000 (chunk 'compa2') n'est
   # pas correcte
   # Vérifiez votre code et indiquez les modèles dans l'ordre comme arguments.
 
@@ -269,9 +313,16 @@ test_that("Chunks 'compa2', 'compa2comment', comparaison des modèles é et 3 po
 })
 
 test_that("Le code pour l'équation paramétrée du modèle 2000 est-il correct ?", {
-  expect_true(rmd_select(who, by_section(
-    "Modèle de l'espérance de vie en l'an 2000")) |>
-      as_document() |> is_display_param_equation("who00_lm2"))
+  expect_true(
+    rmd_select(
+      who,
+      by_section(
+        "Modèle de l'espérance de vie en l'an 2000"
+      )
+    ) |>
+      as_document() |>
+      is_display_param_equation("who00_lm2")
+  )
   # Le code pour générer l'équation paramétrée du modèle pour 2000 est incorrect
   # Vous avez appris à faire cela dans un learnr du module 2. Revoyez cette
   # matière et vérifiez comment l'équation se présente dans le document final
@@ -345,9 +396,16 @@ test_that("Chunks 'compa3', 'compa3comment', comparaison des deux modèles pour 
 })
 
 test_that("Le code pour l'équation paramétrée du modèle 2015 est-il correct ?", {
-  expect_true(rmd_select(who, by_section(
-    "Modèle de l'espérance de vie en l'an 2015")) |>
-      as_document() |> is_display_param_equation("who15_lm2"))
+  expect_true(
+    rmd_select(
+      who,
+      by_section(
+        "Modèle de l'espérance de vie en l'an 2015"
+      )
+    ) |>
+      as_document() |>
+      is_display_param_equation("who15_lm2")
+  )
   # Le code pour générer l'équation paramétrée du modèle pour 2015 est incorrect
   # Vous avez appris à faire cela dans un learnr du module 2. Revoyez cette
   # matière et vérifiez comment l'équation se présente dans le document final
